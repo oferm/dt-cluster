@@ -58,10 +58,11 @@ class MyNode : public dtABC::Application
 		dtCore::RefPtr<dtCore::WalkMotionModel>	mMotion; // Motion model
 		dtCore::RefPtr<dtCore::Camera>			mCam;
 		bool									mIamHost;
-		//bool									mIamSlave;
 
 		void SendPosition();
 		void CreateSlaveCam();
+
+
    
 };
 
