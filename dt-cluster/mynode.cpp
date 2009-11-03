@@ -85,7 +85,19 @@ void MyNode::Config()
 		mMotion->SetHeightAboveTerrain( eyeheight );   
 		mMotion->SetMaximumWalkSpeed(3.0f); // we need a negative value for joystick(!!)
 		mMotion->SetMaximumTurnSpeed(70.0f);
-	}	
+
+		/*
+		** Sets up the joystick controller
+		*/
+		mInputMapper = new InputMapper;
+
+		dtInputPLIB::Joystick::CreateInstances();
+
+		for (int i = 0; i < dtInputPLIB::Joystick::GetInstanceCount(); i++)
+		{
+		 mInputMapper->AddDevice(dtInputPLIB::Joystick::GetInstance(i));
+		}
+	}
 	else
 		CreateSlaveCam();
 }
