@@ -27,6 +27,8 @@
 #include <dtCore/walkmotionmodel.h>
 #include <dtCore/refptr.h>
 #include <dtNet/dtnet.h>
+#include <dtCore/inputmapper.h>		//For joystick functionality
+#include <dtInputPLIB/joystick.h>	//For joystick functionality
 
 #include "Mynet.h"
 
@@ -57,6 +59,7 @@ class MyNode : public dtABC::Application
 		dtCore::RefPtr<dtCore::Object>			mScene; // Ground
 		dtCore::RefPtr<dtCore::WalkMotionModel>	mMotion; // Motion model
 		dtCore::RefPtr<dtCore::Camera>			mCam;
+		dtCore::RefPtr<dtCore::InputMapper>		mInputMapper; //Input Mapper for joystick
 		bool									mIamHost;
 
 		void SendPosition();
