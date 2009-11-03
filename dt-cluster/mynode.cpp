@@ -75,6 +75,10 @@ void MyNode::Config()
 			GetWindow()->SetPosition(width, height, width, height);
 
 		}
+
+		/* 
+		** Sets up the controlling scheme
+		*/
 		mMotion = new WalkMotionModel(GetKeyboard(), GetMouse());
 		mMotion->SetScene( GetScene() );
 		mMotion->SetTarget( GetCamera() );

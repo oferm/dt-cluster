@@ -1,4 +1,4 @@
-set FILE="C:\Program Files\VR\Delta3D_REL-2.2.0\examples\data\demoMap\StaticMeshes\TestTownLt.ive"
+set FILE="C:\Program Files\VR\Delta3D_REL-2.4.0_RC2\examples\data\demoMap\StaticMeshes\TestTownLt.ive"
 start dt-cluster2009.exe %FILE%
 
 start dt-cluster2009.exe %FILE% 127.0.0.1 left
