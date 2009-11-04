@@ -80,23 +80,28 @@ void MyNode::Config()
 		** Sets up the controlling scheme
 		*/
 		mMotion = new WalkMotionModel(GetKeyboard(), GetMouse());
+
+		/**
+		  * Sets up the joystick controller
+		  * if there is one present.
+		 **/
+		dtInputPLIB::Joystick::CreateInstances();
+	    for (int i = 0; i < dtInputPLIB::Joystick::GetInstanceCount(); i++)
+		{
+			dtInputPLIB::Joystick* mJoystick = dtInputPLIB::Joystick::GetInstance(i);
+			assert(mJoystick);
+			mMotion->SetTurnLeftRightAxis(mJoystick->GetAxis(0));
+			mMotion->SetWalkForwardBackwardAxis(mJoystick->GetAxis(1));
+		}
+
+
 		mMotion->SetScene( GetScene() );
 		mMotion->SetTarget( GetCamera() );
 		mMotion->SetHeightAboveTerrain( eyeheight );   
-		mMotion->SetMaximumWalkSpeed(3.0f); // we need a negative value for joystick(!!)
+		mMotion->SetMaximumWalkSpeed(-3.0f); // To invert (joystick), set to a negative value.
 		mMotion->SetMaximumTurnSpeed(70.0f);
 
-		/*
-		** Sets up the joystick controller
-		*/
-		mInputMapper = new InputMapper;
 
-		dtInputPLIB::Joystick::CreateInstances();
-
-		for (int i = 0; i < dtInputPLIB::Joystick::GetInstanceCount(); i++)
-		{
-		 mInputMapper->AddDevice(dtInputPLIB::Joystick::GetInstance(i));
-		}
 	}
 	else
 		CreateSlaveCam();
@@ -163,7 +168,8 @@ windef:
 
 void MyNode::PreFrame( const double deltaFrameTime )
 {
-   mNet->PreFrame( deltaFrameTime );
+	dtInputPLIB::Joystick::PollInstances();
+	mNet->PreFrame( deltaFrameTime );
 }
 
 void MyNode::Frame( const double deltaFrameTime )
@@ -202,6 +208,7 @@ void MyNode::Quit()
 	
 	Application::Quit();
 }
+
 
 
 //bool MyNode::KeyPressed(const dtCore::Keyboard* keyboard, int key)
