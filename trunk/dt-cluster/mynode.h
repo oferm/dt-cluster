@@ -59,7 +59,6 @@ class MyNode : public dtABC::Application
 		dtCore::RefPtr<dtCore::Object>			mScene; // Ground
 		dtCore::RefPtr<dtCore::WalkMotionModel>	mMotion; // Motion model
 		dtCore::RefPtr<dtCore::Camera>			mCam;
-		dtCore::RefPtr<dtCore::InputMapper>		mInputMapper; //Input Mapper for joystick
 		bool									mIamHost;
 
 		void SendPosition();
