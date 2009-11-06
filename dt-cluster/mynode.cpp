@@ -53,7 +53,12 @@ MyNode::MyNode( const std::string &fileName,
    
 void MyNode::Config()
 {  
-	Application::Config(); 
+	Application::Config();
+		/**
+		*  If a joystick is inverted, the MaximumWalkSpeed should be negative.
+		*  If no mouse is present, it should be positive.
+		**/
+	float invertJoystick = 1.0f;
 	
 	mScene = new Object("Scene");// setup scene here
 	mScene->LoadFile( mFileName );
@@ -92,13 +97,14 @@ void MyNode::Config()
 			assert(mJoystick);
 			mMotion->SetTurnLeftRightAxis(mJoystick->GetAxis(0));
 			mMotion->SetWalkForwardBackwardAxis(mJoystick->GetAxis(1));
+			invertJoystick = -1.0f;
 		}
 
 
 		mMotion->SetScene( GetScene() );
 		mMotion->SetTarget( GetCamera() );
-		mMotion->SetHeightAboveTerrain( eyeheight );   
-		mMotion->SetMaximumWalkSpeed(-3.0f); // To invert (joystick), set to a negative value.
+		mMotion->SetHeightAboveTerrain( eyeheight );
+		mMotion->SetMaximumWalkSpeed(invertJoystick * 3.0f);
 		mMotion->SetMaximumTurnSpeed(70.0f);
 
 
