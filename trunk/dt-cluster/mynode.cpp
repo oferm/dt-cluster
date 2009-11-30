@@ -61,7 +61,7 @@ void MyNode::Config()
 {  
 	Application::Config();
 		/**
-		*  If a joystick is inverted, the MaximumWalkSpeed should be negative.
+		*  If a joystick is present, the MaximumWalkSpeed should be negative.
 		*  If no mouse is present, it should be positive.
 		**/
 	float invertJoystick = 1.0f;
@@ -82,7 +82,7 @@ void MyNode::Config()
 			int width = GetWindow()->GetPosition().mWidth; //    426;
 			int height = GetWindow()->GetPosition().mHeight; //  341;
 			//Commented out. Doesn't work in 2.4.0_RC2
-			//GetWindow()->GetOsgViewerGraphicsWindow()->setWindowDecoration(false);
+			GetWindow()->GetOsgViewerGraphicsWindow()->setWindowDecoration(false);
 			GetWindow()->SetPosition(width, height, width, height);
 
 		}
@@ -114,18 +114,21 @@ void MyNode::Config()
 		mMotion->SetMaximumWalkSpeed(invertJoystick * 3.0f);
 		mMotion->SetMaximumTurnSpeed(70.0f);
 
-			    
-		handle = ISD_OpenTracker( NULL, 0, FALSE, FALSE );   
-	    
-		if(handle > 0) 
-			//printf( "\n    Az      El      Rl\n" );
-			printf( "\n   xPos    yPos    zPos\n" );
-		else
-			printf( "Tracker not found." );
-
-		mHeadTrackPosition[0] = 0.0f;
-		mHeadTrackPosition[1] = 0.0f;
-		mHeadTrackPosition[2] = 0.0f;
+		/* Commented out in search of the code that causes BSOD.
+		 *
+		 *
+		 *		handle = ISD_OpenTracker( NULL, 0, FALSE, FALSE );   
+		 *		    
+		 *		if(handle > 0) 
+		 *			//printf( "\n    Az      El      Rl\n" );
+		 *			printf( "\n   xPos    yPos    zPos\n" );
+		 *		else
+		 *			printf( "Tracker not found." );
+		 *
+		 *		mHeadTrackPosition[0] = 0.0f;
+		 *		mHeadTrackPosition[1] = 0.0f;
+		 *		mHeadTrackPosition[2] = 0.0f;
+		 */
 
 
 	}
@@ -205,8 +208,8 @@ void MyNode::Frame( const double deltaFrameTime )
 
 	if (mIamHost)// if host: send position packet.
 	{
-		//SendPosition(); 
-		UpdateTracking();
+		SendPosition(); 
+		//UpdateTracking();
 		//mCam->SetFrustum(-0.1-mHeadTrackPosition[0], 0.1-mHeadTrackPosition[0], -0.1, 0.05, 0.1, 1000.0 ); // frustum off-axis
 
 
@@ -237,7 +240,7 @@ void MyNode::Quit()
 		PlayerQuitPacket packet( GetUniqueId().ToString() );
 		mNet->SendPacket( "all", packet );
 		
-		ISD_CloseTracker( handle ); // close tracker
+		//ISD_CloseTracker( handle ); // close tracker
 	}
 	//shutdown the networking
 	//mNet->Shutdown();
