@@ -296,7 +296,6 @@ void MyNode::Quit()
 ******************************************************************************/
 void MyNode::UpdateTracking()
 {
-	/*
 	// Only execute if this is the host
 	if(handle > 0)
 	{
@@ -317,6 +316,6 @@ void MyNode::UpdateTracking()
 			tracker.KBitsPerSec, tracker.RecordsPerSec );
 	}
 	//Sleep( 8 );
-*/
+
 }
 
