@@ -98,14 +98,13 @@ void MyNode::Config()
 		  * In the CUBE-environment, instance 0 is the correct joystick
 		 **/
 		dtInputPLIB::Joystick::CreateInstances();
-	    //for (int i = 0; i < dtInputPLIB::Joystick::GetInstanceCount(); i++)
-		//{
+	    for (int i = 0; i < dtInputPLIB::Joystick::GetInstanceCount(); i++)
+		{
 			dtInputPLIB::Joystick* mJoystick = dtInputPLIB::Joystick::GetInstance(0);
-			//assert(mJoystick);
 			mMotion->SetTurnLeftRightAxis(mJoystick->GetAxis(0));
 			mMotion->SetWalkForwardBackwardAxis(mJoystick->GetAxis(1));
 			invertJoystick = -1.0f;
-		//}
+		}
 
 
 		mMotion->SetScene( GetScene() );
@@ -206,8 +205,8 @@ void MyNode::Frame( const double deltaFrameTime )
 {
 	Application::Frame(deltaFrameTime);
 
-<<<<<<< .mine
 	if (mIamHost)
+	{
 		SendPosition();
 		//UpdateTracking();
 		//mCam->SetFrustum(-0.1-mHeadTrackPosition[0], 0.1-mHeadTrackPosition[0], -0.1, 0.05, 0.1, 1000.0 ); // frustum off-axis
@@ -297,6 +296,7 @@ void MyNode::Quit()
 ******************************************************************************/
 void MyNode::UpdateTracking()
 {
+	/*
 	// Only execute if this is the host
 	if(handle > 0)
 	{
@@ -306,9 +306,7 @@ void MyNode::UpdateTracking()
 			data.Station[0].Position[0], 
 			data.Station[0].Position[1], 
 			data.Station[0].Position[2] );
-			/*data.Station[0].Orientation[0], 
-			data.Station[0].Orientation[1], 
-			data.Station[0].Orientation[2] );*/
+
 		mHeadTrackPosition[0] = data.Station[0].Position[1] *0.05f;
 		mHeadTrackPosition[1] = data.Station[0].Position[0] *0.05f;
 		mHeadTrackPosition[2] = data.Station[0].Position[2] *0.05f;
@@ -319,5 +317,6 @@ void MyNode::UpdateTracking()
 			tracker.KBitsPerSec, tracker.RecordsPerSec );
 	}
 	//Sleep( 8 );
+*/
 }
 
