@@ -206,13 +206,11 @@ void MyNode::Frame( const double deltaFrameTime )
 {
 	Application::Frame(deltaFrameTime);
 
-	if (mIamHost)// if host: send position packet.
-	{
-		SendPosition(); 
+<<<<<<< .mine
+	if (mIamHost)
+		SendPosition();
 		//UpdateTracking();
 		//mCam->SetFrustum(-0.1-mHeadTrackPosition[0], 0.1-mHeadTrackPosition[0], -0.1, 0.05, 0.1, 1000.0 ); // frustum off-axis
-
-
 	}
 
 
