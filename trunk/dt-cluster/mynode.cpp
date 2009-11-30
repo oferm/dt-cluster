@@ -3,6 +3,10 @@
 #include <dtCore/deltawin.h>
 #include <dtCore/transform.h> //Fix for D3D_2.4.0-RC2
 #include <osgViewer/Viewer> //Fix for D3D_2.4.0-RC2
+#include <conio.h>
+
+
+#define ESC         0X1B
 
 using namespace dtCore;
 using namespace dtABC;
@@ -22,6 +26,7 @@ MyNode::MyNode( const std::string &fileName,
 	{
 		mIamHost = true;
 		logFilename = std::string("server.log");
+		handle=0;
 	}
 	else
 	{
@@ -49,6 +54,7 @@ MyNode::MyNode( const std::string &fileName,
 		GetWindow()->SetWindowTitle("Slave to: " + hostIP);
 	 
 	}
+
 }
    
 void MyNode::Config()
@@ -89,16 +95,17 @@ void MyNode::Config()
 		/**
 		  * Sets up the joystick controller
 		  * if there is one present.
+		  * In the CUBE-environment, instance 0 is the correct joystick
 		 **/
 		dtInputPLIB::Joystick::CreateInstances();
-	    for (int i = 0; i < dtInputPLIB::Joystick::GetInstanceCount(); i++)
-		{
-			dtInputPLIB::Joystick* mJoystick = dtInputPLIB::Joystick::GetInstance(i);
-			assert(mJoystick);
+	    //for (int i = 0; i < dtInputPLIB::Joystick::GetInstanceCount(); i++)
+		//{
+			dtInputPLIB::Joystick* mJoystick = dtInputPLIB::Joystick::GetInstance(0);
+			//assert(mJoystick);
 			mMotion->SetTurnLeftRightAxis(mJoystick->GetAxis(0));
 			mMotion->SetWalkForwardBackwardAxis(mJoystick->GetAxis(1));
 			invertJoystick = -1.0f;
-		}
+		//}
 
 
 		mMotion->SetScene( GetScene() );
@@ -106,6 +113,19 @@ void MyNode::Config()
 		mMotion->SetHeightAboveTerrain( eyeheight );
 		mMotion->SetMaximumWalkSpeed(invertJoystick * 3.0f);
 		mMotion->SetMaximumTurnSpeed(70.0f);
+
+			    
+		handle = ISD_OpenTracker( NULL, 0, FALSE, FALSE );   
+	    
+		if(handle > 0) 
+			//printf( "\n    Az      El      Rl\n" );
+			printf( "\n   xPos    yPos    zPos\n" );
+		else
+			printf( "Tracker not found." );
+
+		mHeadTrackPosition[0] = 0.0f;
+		mHeadTrackPosition[1] = 0.0f;
+		mHeadTrackPosition[2] = 0.0f;
 
 
 	}
@@ -120,7 +140,8 @@ void MyNode::CreateSlaveCam()
 	int hq =1; // horizontal quadrant position
 	int vq =1; // vertical quadrant position
 	mCam->SetWindow( GetWindow() );
-	mCam->SetFrustum(-0.1, 0.1, -0.1, 0.05, 0.1, 1000.0 ); // frustum off-axis
+	float xoffset = 0.00005;
+	mCam->SetFrustum(-0.1-xoffset, 0.1-xoffset, -0.1, 0.05, 0.1, 1000.0 ); // frustum off-axis
 
 	if (mSlaveCam == "left")
 	{
@@ -183,7 +204,15 @@ void MyNode::Frame( const double deltaFrameTime )
 	Application::Frame(deltaFrameTime);
 
 	if (mIamHost)// if host: send position packet.
-		SendPosition(); 
+	{
+		//SendPosition(); 
+		UpdateTracking();
+		//mCam->SetFrustum(-0.1-mHeadTrackPosition[0], 0.1-mHeadTrackPosition[0], -0.1, 0.05, 0.1, 1000.0 ); // frustum off-axis
+
+
+	}
+
+
 }
 
 void MyNode::SendPosition()
@@ -208,12 +237,20 @@ void MyNode::Quit()
 		PlayerQuitPacket packet( GetUniqueId().ToString() );
 		mNet->SendPacket( "all", packet );
 		
+		ISD_CloseTracker( handle ); // close tracker
 	}
 	//shutdown the networking
 	//mNet->Shutdown();
 	
+	
 	Application::Quit();
 }
+
+/**
+*  Redraws the frustum if and when the head tracking
+*  gear picks up a change in the position
+**/
+
 
 
 
@@ -244,3 +281,42 @@ void MyNode::Quit()
 //
 //   return verdict;
 //}
+
+/*****************************************************************************
+*
+*   functionName:   main
+*   Description:    a sample main
+*   Created:        12/7/98
+*   Author:         Yury Altshuler
+*
+*   Comments:       This simple main shows how to initialize and get data from
+*                   a single InterSense tracker using the isense.dll. The DLL 
+*                   can simultaneously support up to 4 devices.
+*
+******************************************************************************/
+void MyNode::UpdateTracking()
+{
+	// Only execute if this is the host
+	if(handle > 0)
+	{
+		ISD_GetData( handle, &data );
+	    
+		printf( "%7.2f %7.2f %7.2f     ", 
+			data.Station[0].Position[0], 
+			data.Station[0].Position[1], 
+			data.Station[0].Position[2] );
+			/*data.Station[0].Orientation[0], 
+			data.Station[0].Orientation[1], 
+			data.Station[0].Orientation[2] );*/
+		mHeadTrackPosition[0] = data.Station[0].Position[1] *0.05f;
+		mHeadTrackPosition[1] = data.Station[0].Position[0] *0.05f;
+		mHeadTrackPosition[2] = data.Station[0].Position[2] *0.05f;
+	    
+		ISD_GetCommInfo( handle, &tracker );
+
+		printf( "%5.2fKbps %d Records/s \r", 
+			tracker.KBitsPerSec, tracker.RecordsPerSec );
+	}
+	//Sleep( 8 );
+}
+
