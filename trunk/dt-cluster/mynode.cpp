@@ -56,6 +56,15 @@ void MyNode::Config()
 	Application::Config(); 
 
 	/**
+	*  Set up Stereo Rendering
+	**/
+	osg::DisplaySettings *display = osg::DisplaySettings::instance();
+	display->setStereo(true);
+	display->setStereoMode(osg::DisplaySettings::HORIZONTAL_SPLIT);
+	//display->setSplitStereoVerticalSeparation(300);
+
+
+	/**
 	*  If a joystick is present, the maximumWalkSpeed should be negative
 	*  If no joystick is present, it should be positive
 	*  Default: no joystick is present.
@@ -78,8 +87,14 @@ void MyNode::Config()
 			int width = GetWindow()->GetPosition().mWidth; //    426;
 			int height = GetWindow()->GetPosition().mHeight; //  341;
 			//Commented out. Doesn't work in 2.4.0_RC2
-			GetWindow()->GetOsgViewerGraphicsWindow()->setWindowDecoration(false);
+			//GetWindow()->GetOsgViewerGraphicsWindow()->setWindowDecoration(false);
 			GetWindow()->SetPosition(width, height, width, height);
+
+		} else
+		{
+			GetWindow()->SetFullScreenMode(true);
+			//2800x1050
+			GetWindow()->ChangeScreenResolution(2800, 1050, 24, 59);
 
 		}
 		mMotion = new WalkMotionModel(GetKeyboard(), GetMouse());
