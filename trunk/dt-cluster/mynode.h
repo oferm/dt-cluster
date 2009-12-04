@@ -27,12 +27,10 @@
 #include <dtCore/walkmotionmodel.h>
 #include <dtCore/refptr.h>
 #include <dtNet/dtnet.h>
-#include <dtCore/inputmapper.h>		//For joystick functionality
-#include <dtInputPLIB/joystick.h>	//For joystick functionality
+#include <dtCore/inputmapper.h>         //For joystick functionality
+#include <dtInputPLIB/joystick.h>       //For joystick functionality 
 
 #include "Mynet.h"
-#include "isense.h"
-
 
 class MyNode : public dtABC::Application
 {
@@ -52,7 +50,6 @@ class MyNode : public dtABC::Application
       virtual void Frame( const double deltaFrameTime );
       virtual void Quit();
 
-
    private:
          
 		dtCore::RefPtr<MyNet>					mNet; // Reference the NetMgr derived class
@@ -63,15 +60,10 @@ class MyNode : public dtABC::Application
 		dtCore::RefPtr<dtCore::WalkMotionModel>	mMotion; // Motion model
 		dtCore::RefPtr<dtCore::Camera>			mCam;
 		bool									mIamHost;
-		osg::Vec3								mHeadTrackPosition;
-		ISD_TRACKER_HANDLE						handle;
-		ISD_TRACKER_INFO_TYPE					tracker;
-		ISD_TRACKER_DATA_TYPE					data;
-		
+		//bool									mIamSlave;
+
 		void SendPosition();
 		void CreateSlaveCam();
-		void UpdateTracking();
-
    
 };
 

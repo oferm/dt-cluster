@@ -8,7 +8,6 @@
 #include "mynode.h"
 #include <gnelib.h>
 #include <dtCore/globals.h>
-#include "isense.h"
 
 using namespace dtCore;
 using namespace dtUtil;
