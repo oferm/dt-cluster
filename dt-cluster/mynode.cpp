@@ -3,6 +3,7 @@
 #include <dtCore/deltawin.h>
 #include <dtCore/transform.h> //Fix for D3D_2.4.0-RC2
 #include <osgViewer/Viewer> //Fix for D3D_2.4.0-RC2
+//#include <conio.h>
 
 using namespace dtCore;
 using namespace dtABC;
@@ -22,6 +23,7 @@ MyNode::MyNode( const std::string &fileName,
 	{
 		mIamHost = true;
 		logFilename = std::string("server.log");
+		mIsdTrackerHandle = 0;
 	}
 	else
 	{
@@ -61,7 +63,8 @@ void MyNode::Config()
 	osg::DisplaySettings *display = osg::DisplaySettings::instance();
 	display->setStereo(true);
 	display->setStereoMode(osg::DisplaySettings::HORIZONTAL_SPLIT);
-	//display->setSplitStereoVerticalSeparation(300);
+	
+	display->setSplitStereoVerticalSeparation(00);
 
 
 	/**
@@ -117,8 +120,22 @@ void MyNode::Config()
 		mMotion->SetScene( GetScene() );
 		mMotion->SetTarget( GetCamera() );
 		mMotion->SetHeightAboveTerrain( eyeheight );   
-		mMotion->SetMaximumWalkSpeed(invertJoystick * 3.0f); // we need a negative value for joystick(!!)
+		mMotion->SetMaximumWalkSpeed(invertJoystick * 3.0f); // we need a negative value for joystick
 		mMotion->SetMaximumTurnSpeed(70.0f);
+
+		mIsdTrackerHandle = ISD_OpenTracker(NULL, 0, false, false);
+		if(mIsdTrackerHandle > 0)
+		{
+			printf( "\n xPos yPos zPos\n" );
+		}
+		else
+		{
+			printf("Tracker not found");
+		}
+
+		mHeadTrackPosition[0] = 0.0f;
+		mHeadTrackPosition[1] = 0.0f;
+		mHeadTrackPosition[2] = 0.0f;
 	}	
 	else
 		CreateSlaveCam();
@@ -185,7 +202,9 @@ windef:
 
 void MyNode::PreFrame( const double deltaFrameTime )
 {
-	dtInputPLIB::Joystick::PollInstances(); 
+	dtInputPLIB::Joystick::GetInstance(0)->Poll();
+	//seems as if the below lines was the one that caused BSoD (bug id #4).
+	//dtInputPLIB::Joystick::PollInstances();
 	mNet->PreFrame( deltaFrameTime );
 }
 
@@ -194,7 +213,11 @@ void MyNode::Frame( const double deltaFrameTime )
 	Application::Frame(deltaFrameTime);
 
 	if (mIamHost)// if host: send position packet.
+	{
+		updateHeadTracking();
 		SendPosition(); 
+		//mCam->SetFrustum(-0.1-mHeadTrackPosition[0], 0.1-mHeadTrackPosition[0], -0.1, 0.05, 0.1, 1000.0 ); // frustum off-axis
+	}
 }
 
 void MyNode::SendPosition()
@@ -218,12 +241,35 @@ void MyNode::Quit()
 		//notify everyone else we are quitting
 		PlayerQuitPacket packet( GetUniqueId().ToString() );
 		mNet->SendPacket( "all", packet );
+
+		//Close the head tracking
+		ISD_CloseTracker(mIsdTrackerHandle);
 		
 	}
 	//shutdown the networking
 	//mNet->Shutdown();
 	
 	Application::Quit();
+}
+
+void MyNode::updateHeadTracking()
+{
+	if(mIsdTrackerHandle > 0)
+	{
+		ISD_GetData(mIsdTrackerHandle, &mIsdTrackerData);
+		printf( "%7.2f %7.2f %7.2f ", mIsdTrackerData.Station[0].Position[0], mIsdTrackerData.Station[0].Position[1], mIsdTrackerData.Station[0].Position[2] );
+		/*data.Station[0].Orientation[0],
+		data.Station[0].Orientation[1],
+		data.Station[0].Orientation[2] );*/
+		mHeadTrackPosition[0] = mIsdTrackerData.Station[0].Position[1] *0.05f;
+		mHeadTrackPosition[1] = mIsdTrackerData.Station[0].Position[0] *0.05f;
+		mHeadTrackPosition[2] = mIsdTrackerData.Station[0].Position[2] *0.05f;
+
+		ISD_GetCommInfo(mIsdTrackerHandle, &mIsdTrackerInfo);
+
+		printf( "%5.2fKbps %d Records/s \r",
+			mIsdTrackerInfo.KBitsPerSec, mIsdTrackerInfo.RecordsPerSec );
+	}
 }
 
 

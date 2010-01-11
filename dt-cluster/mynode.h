@@ -31,6 +31,7 @@
 #include <dtInputPLIB/joystick.h>       //For joystick functionality 
 
 #include "Mynet.h"
+#include "isense.h"
 
 class MyNode : public dtABC::Application
 {
@@ -60,10 +61,14 @@ class MyNode : public dtABC::Application
 		dtCore::RefPtr<dtCore::WalkMotionModel>	mMotion; // Motion model
 		dtCore::RefPtr<dtCore::Camera>			mCam;
 		bool									mIamHost;
-		//bool									mIamSlave;
+		osg::Vec3								mHeadTrackPosition;
+		ISD_TRACKER_HANDLE						mIsdTrackerHandle;
+		ISD_TRACKER_INFO_TYPE					mIsdTrackerInfo;
+		ISD_TRACKER_DATA_TYPE					mIsdTrackerData;
 
 		void SendPosition();
 		void CreateSlaveCam();
+		void updateHeadTracking();
    
 };
 
