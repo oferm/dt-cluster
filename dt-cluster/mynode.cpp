@@ -63,8 +63,16 @@ void MyNode::Config()
 	osg::DisplaySettings *display = osg::DisplaySettings::instance();
 	display->setStereo(true);
 	display->setStereoMode(osg::DisplaySettings::HORIZONTAL_SPLIT);
+	display->setSplitStereoHorizontalEyeMapping(osg::DisplaySettings::LEFT_EYE_RIGHT_VIEWPORT);
+
+	//See issue 1, comment 5
+	//Units are in meters
+	display->setEyeSeparation(0.06);
+	display->setScreenHeight(4.0);
+	display->setScreenWidth(4.0);
+	display->setScreenDistance(2.0);
 	
-	display->setSplitStereoVerticalSeparation(00);
+	//display->setSplitStereoVerticalSeparation(400);
 
 
 	/**
