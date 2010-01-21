@@ -260,6 +260,29 @@ void MyNode::Quit()
 	Application::Quit();
 }
 
+//Calculates a new frustum given the parameters
+void MyNode::CalculateNewFrustum()
+{
+	//The variables are located in mHeadTrackPosition[]
+	double headX = mHeadTrackPosition[0];
+	double headY = mHeadTrackPosition[1];
+	double headZ = mHeadTrackPosition[2];
+
+	//distance to front of screen
+	double headDistToFront = headX;
+	//nearClip and farClip should be constant
+	double farClip = 1000.0;
+	double nearClip = 0.1;
+	double screenAspect = 1400.0/1050.0; //may have to divide it with 2 as 2800 = two screens
+
+	double left = nearClip * (-0.1 * screenAspect + headX)/headDistToFront;
+	double right = nearClip * (nearClip * screenAspect + headX)/headDistToFront;
+	double bottom = nearClip * (-0.1 - (-2.0 + headZ))/headDistToFront;
+	double top = nearClip * (nearClip - (-2.0 + headZ))/headDistToFront;
+
+	GetCamera()->SetFrustum(left, right, bottom, top, nearClip, farClip);
+}
+
 void MyNode::updateHeadTracking()
 {
 	if(mIsdTrackerHandle > 0)
@@ -269,9 +292,11 @@ void MyNode::updateHeadTracking()
 		/*data.Station[0].Orientation[0],
 		data.Station[0].Orientation[1],
 		data.Station[0].Orientation[2] );*/
-		mHeadTrackPosition[0] = mIsdTrackerData.Station[0].Position[1] *0.05f;
-		mHeadTrackPosition[1] = mIsdTrackerData.Station[0].Position[0] *0.05f;
+		mHeadTrackPosition[0] = mIsdTrackerData.Station[0].Position[0] *0.05f;
+		mHeadTrackPosition[1] = mIsdTrackerData.Station[0].Position[1] *0.05f;
 		mHeadTrackPosition[2] = mIsdTrackerData.Station[0].Position[2] *0.05f;
+
+		CalculateNewFrustum();
 
 		ISD_GetCommInfo(mIsdTrackerHandle, &mIsdTrackerInfo);
 
