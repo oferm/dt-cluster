@@ -45,7 +45,7 @@ class MyNode : public dtABC::Application
    public:
       virtual void Config();
 
-      //bool KeyPressed(const dtCore::Keyboard* keyboard, int key);
+      bool KeyPressed(const dtCore::Keyboard* keyboard, int key);
 
       virtual void PreFrame( const double deltaFrameTime );
       virtual void Frame( const double deltaFrameTime );

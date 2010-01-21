@@ -281,30 +281,28 @@ void MyNode::updateHeadTracking()
 }
 
 
-//bool MyNode::KeyPressed(const dtCore::Keyboard* keyboard, int key)
-//{
-//   bool verdict(false);
-//   switch( key )
-//   {
-//   case osgGA::GUIEventAdapter::KEY_Escape:
-//      {
-//         Quit();
-//         verdict = true;
-//      } break;
-//
-//   case 'P':
-//      {
-//         //send a "ping" packet for latency info
-//         GNE::PingPacket ping;
-//         mNet->SendPacket("all", ping);
-//         verdict = true;
-//      } break;
-//
-//   default:
-//      {
-//         verdict = false;
-//      } break;
-//   }
-//
-//   return verdict;
-//}
+bool MyNode::KeyPressed(const dtCore::Keyboard* keyboard, int key)
+{
+   bool verdict(false);
+   switch( key )
+   {
+   case osgGA::GUIEventAdapter::KEY_Escape:
+      {
+         Quit();
+         verdict = true;
+      } break;
+
+
+   case osgGA::GUIEventAdapter::KEY_Return:
+	   {
+		   SetNextStatisticsType();
+	   } break;
+
+   default:
+      {
+         verdict = false;
+      } break;
+   }
+
+   return verdict;
+}
