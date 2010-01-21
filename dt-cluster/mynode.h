@@ -66,10 +66,10 @@ class MyNode : public dtABC::Application
 		ISD_TRACKER_INFO_TYPE					mIsdTrackerInfo;
 		ISD_TRACKER_DATA_TYPE					mIsdTrackerData;
 
-		void SendPosition();
-		void CreateSlaveCam();
-		void updateHeadTracking();
-   
+		void									SendPosition();
+		void									CreateSlaveCam();
+		void									updateHeadTracking();
+		void									CalculateNewFrustum();
 };
 
 #endif // DELTA_MyNode
